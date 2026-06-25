@@ -15,6 +15,7 @@ class UserSeeder extends Seeder
                 'name' => 'Admin Demo',
                 'email' => 'admin@gmail.com',
                 'password' => 'Admin#123',
+                'phone' => '080000000000',
                 'role' => 'ADMIN',
             ],
             [

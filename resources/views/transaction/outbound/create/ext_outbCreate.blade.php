@@ -236,18 +236,33 @@ function qtyReqCell(cell, rowData) {
     $(cell).find('input')
         .off('input.qtyreq')
         .on('input.qtyreq', function () {
-            let value = parseFloat($(this).val()) || 0;
+            let input = $(this);
+            let value = parseFloat(input.val()) || 0;
+            let availableQty = parseFloat(rowData.available_qty) || 0;
 
-            if (value < 0) value = 0;
+            if (value < 0) {
+                value = 0;
+            }
 
-            if (rowData.available_qty && value > rowData.available_qty) {
-                value = rowData.available_qty;
-                Swal.fire('Warning', 'Qty request tidak boleh melebihi available stock', 'warning');
+            if (value > availableQty) {
+                value = availableQty;
+
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Qty Request Tidak Valid',
+                    text: `Qty request tidak boleh melebihi available stock (${availableQty}).`,
+                    confirmButtonText: 'OK'
+                });
             }
 
             rowData.qty_req = value;
-            rowData.qty_outstanding = value - (rowData.qty_picked_existing || 0);
-            $(this).val(value);
+            rowData.qty_outstanding = value - (parseFloat(rowData.qty_picked_existing) || 0);
+
+            input.val(value);
+
+            const rowIndex = detailTable.row(input.closest('tr')).index();
+            const outstandingCell = detailTable.cell(rowIndex, 7).node();
+            $(outstandingCell).text(rowData.qty_outstanding);
         });
 }
 
@@ -427,10 +442,29 @@ function loadAvailableStock(rowData, rowNode) {
             location_id: rowData.location_id,
         },
         success: function (res) {
-            rowData.available_qty = res.available_qty ?? 0;
+            const availableQty = parseFloat(res.available_qty) || 0;
+            rowData.available_qty = availableQty;
 
             const availableCell = detailTable.cell(rowNode, 4).node();
-            $(availableCell).text(rowData.available_qty);
+            $(availableCell).text(availableQty);
+
+            if ((parseFloat(rowData.qty_req) || 0) > availableQty) {
+                rowData.qty_req = availableQty;
+                rowData.qty_outstanding = availableQty - (parseFloat(rowData.qty_picked_existing) || 0);
+
+                const qtyReqCellNode = detailTable.cell(rowNode, 5).node();
+                $(qtyReqCellNode).find('input').val(availableQty);
+
+                const outstandingCell = detailTable.cell(rowNode, 7).node();
+                $(outstandingCell).text(rowData.qty_outstanding);
+
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Qty Request Disesuaikan',
+                    text: `Qty request dikembalikan ke available stock (${availableQty}).`,
+                    confirmButtonText: 'OK'
+                });
+            }
         }
     });
 }

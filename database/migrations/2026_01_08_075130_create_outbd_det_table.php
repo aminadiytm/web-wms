@@ -25,7 +25,7 @@ return new class extends Migration
                     ->constrained('locations', 'loc_id')
                     ->cascadeOnUpdate()
                     ->restrictOnDelete();
-            $table->string('outbd_confrm_by', 30);
+            $table->string('outbd_confrm_by', 30)->nullable();
             $table->decimal('qty_req', 20, 4)->default(0);
             $table->decimal('qty_picked', 20, 4)->default(0);
             $table->string('outbd_add_by', 30);

@@ -54,7 +54,7 @@ class OutboundController extends Controller
             ->addIndexColumn()
             ->addColumn('action', function ($row) {
                 $status = strtoupper($row->status ?? 'DRAFT');
-                $canEdit = MenuPermissionHelper::canEdit('transaction.inbIndex');
+                $canEdit = MenuPermissionHelper::canEdit('transaction.outbIndex');
 
                 if ($status === 'DRAFT') {
                     if($canEdit)
