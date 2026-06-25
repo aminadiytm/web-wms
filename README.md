@@ -96,9 +96,9 @@ Authorized Route
 
 | Role | Email | Password |
 |------|-------|----------|
-| ADMIN | admin@example.com | password |
-| STAFF INBOUND | staff.inbound@example.com | password |
-| STAFF OUTBOUND | staff.outbound@example.com | password |
+| ADMIN | admin@gmail.com | Admin#123 |
+| STAFF INBOUND | staff.inbound@gmail.com | Password#123 |
+| STAFF OUTBOUND | staff.outbound@gmail.com | Password#123 |
 
 ---
 
