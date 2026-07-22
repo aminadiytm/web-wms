@@ -1,4 +1,8 @@
 @push('scripts')
+@php
+use App\Helpers\MenuPermissionHelper;
+@endphp
+
 <script>
     $(function() {        
         $.ajaxSetup({
@@ -21,6 +25,11 @@
             minimumResultsForSearch: 0
         });
 
+        const prdPermission = {
+            canEdit: @json(MenuPermissionHelper::canEdit('masterdata.prdIndex')),
+            canDelete: @json(MenuPermissionHelper::canDelete('masterdata.prdIndex'))
+        };
+
         // 1) Render List Data
         const table = $('#prd_tbl').DataTable({
             ajax: '{{ route('masterdata.prdList') }}',
@@ -31,26 +40,47 @@
                     searchable: false,
                     className: "text-center align-middle",
                     render: function (data, type, row) {
-                        return `
-                            <div class="action-group d-flex justify-content-center align-items-center gap-2">
-                                <button
-                                    type="button"
-                                    class="action-icon action-icon-edit btn-edit"
-                                    data-id="${row.id}"
-                                    title="Edit"
-                                >
-                                    <i class="fas fa-pen"></i>
-                                </button>
-                                <button
-                                    type="button"
-                                    class="action-icon action-icon-delete btn-delete"
-                                    data-id="${row.id}"
-                                    title="Delete"
-                                >
-                                    <i class="fas fa-trash"></i>
-                                </button>
-                            </div>
-                        `;
+                      let actions = '';
+
+                      if (prdPermission.canEdit) {
+                          actions += `
+                              <button
+                                  type="button"
+                                  class="action-icon action-icon-edit btn-edit"
+                                  data-id="${row.id}"
+                                  title="Edit"
+                              >
+                                  <i class="fas fa-pen"></i>
+                              </button>
+                          `;
+                      }
+                    
+                      if (prdPermission.canDelete) {
+                          actions += `
+                              <button
+                                  type="button"
+                                  class="action-icon action-icon-delete btn-delete"
+                                  data-id="${row.id}"
+                                  title="Delete"
+                              >
+                                  <i class="fas fa-trash"></i>
+                              </button>
+                          `;
+                      }
+                    
+                      if (!actions) {
+                          return `
+                              <span class="text-muted" title="No action permission">
+                                  <i class="fas fa-lock"></i>
+                              </span>
+                          `;
+                      }
+                    
+                      return `
+                          <div class="action-group d-flex justify-content-center align-items-center gap-2">
+                              ${actions}
+                          </div>
+                      `;
                     }
                 },
                 {data:'DT_RowIndex', name:'DT_RowIndex', orderable: false, searchable: false},

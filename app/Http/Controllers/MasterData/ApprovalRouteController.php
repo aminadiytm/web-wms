@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\MasterData;
 
+use App\Helpers\MenuPermissionHelper;
 use App\Http\Controllers\Controller;
 use App\Models\ApprovalRoute;
 use App\Models\User;
@@ -49,8 +50,12 @@ class ApprovalRouteController extends Controller
                     : '<span class="badge bg-danger">Inactive</span>';
             })
             ->addColumn('action', function ($row) {
-                return '
-                    <div class="action-group d-flex justify-content-center align-items-center gap-2">
+                $canEdit   = MenuPermissionHelper::canEdit('masterdata.approvalRouteIndex');
+                $canDelete = MenuPermissionHelper::canDelete('masterdata.approvalRouteIndex');
+                $action = '';
+
+                if($canEdit) {
+                    $action .= '
                         <button
                             type="button"
                             class="action-icon action-icon-edit btn-edit"
@@ -59,6 +64,11 @@ class ApprovalRouteController extends Controller
                         >
                             <i class="fas fa-pen"></i>
                         </button>
+                    ';
+                }
+                
+                if($canDelete) {
+                    $action .= '
                         <button
                             type="button"
                             class="action-icon action-icon-delete btn-delete"
@@ -67,8 +77,23 @@ class ApprovalRouteController extends Controller
                         >
                             <i class="fas fa-trash"></i>
                         </button>
+                    ';
+                }
+
+                if ($action === '') {
+                    return '
+                        <span class="text-muted" title="No action permission">
+                            <i class="fas fa-lock"></i>
+                        </span>
+                    ';
+                }
+            
+                return '
+                    <div class="action-group d-flex justify-content-center align-items-center gap-2">
+                        '.$action.'
                     </div>
                 ';
+
             })
             ->rawColumns(['is_default', 'is_active', 'action'])
             ->toJson();

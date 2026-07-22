@@ -10,12 +10,17 @@
                         <div>
                             <h5 class="mb-0">All {{ $title }} </h5>
                         </div>
-                        <button type="button"
-                            class="btn btn-premium"
-                            id="btn-add">
-                            <i class="fas fa-plus me-2"></i>
-                            New Routing
-                        </button>
+                        @php
+                            use App\Helpers\MenuPermissionHelper;
+                        @endphp
+                        @if (MenuPermissionHelper::canCreate('masterdata.approvalRouteIndex'))
+                            <button type="button"
+                                class="btn btn-premium"
+                                id="btn-add">
+                                <i class="fas fa-plus me-2"></i>
+                                New Routing
+                            </button>
+                        @endif
                     </div>
                 </div>
                 <div class="card-body">

@@ -14,13 +14,18 @@
                         <div>
                             <h5 class="mb-0">All {{ $title }}</h5>
                         </div>
-                        <button type="button"
-                            class="btn btn-premium"
-                            data-bs-toggle="modal"
-                            data-bs-target="#userModal">
-                            <i class="fas fa-plus me-2"></i>
-                            New User
-                        </button>
+                        @php
+                            use App\Helpers\MenuPermissionHelper;
+                        @endphp
+                        @if (MenuPermissionHelper::canCreate('admin.users.usrIndex'))
+                            <button type="button"
+                                class="btn btn-premium"
+                                data-bs-toggle="modal"
+                                data-bs-target="#userModal">
+                                <i class="fas fa-plus me-2"></i>
+                                New User
+                            </button>
+                        @endif
                     </div>
                 </div>
 

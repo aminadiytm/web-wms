@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Security;
 
+use App\Helpers\MenuPermissionHelper;
 use App\Http\Controllers\Controller;
 use App\Models\MenuList;
 use Illuminate\Http\Request;
@@ -38,24 +39,48 @@ class RolePermissionController extends Controller
             ->addIndexColumn()
             ->addColumn('total_permission', fn ($row) => $row->permissions_count)
             ->addColumn('action', function ($row) {
-                return '
-                    <div class="action-group d-flex justify-content-center align-items-center gap-2">
+                $canEdit   = MenuPermissionHelper::canEdit('security.roleIndex');
+                $canDelete = MenuPermissionHelper::canDelete('security.roleIndex');
+
+                $action = '';
+            
+                if ($canEdit) {
+                    $action .= '
                         <button
                             type="button"
                             class="action-icon action-icon-edit btn-edit"
-                            data-id="' . $row->id . '"
+                            data-id="'.$row->id.'"
                             title="Edit"
                         >
                             <i class="fas fa-pen"></i>
                         </button>
+                    ';
+                }
+            
+                if ($canDelete) {
+                    $action .= '
                         <button
                             type="button"
                             class="action-icon action-icon-delete btn-delete"
-                            data-id="' . $row->id . '"
+                            data-id="'.$row->id.'"
                             title="Delete"
                         >
                             <i class="fas fa-trash"></i>
                         </button>
+                    ';
+                }
+            
+                if ($action === '') {
+                    return '
+                        <span class="text-muted" title="No action permission">
+                            <i class="fas fa-lock"></i>
+                        </span>
+                    ';
+                }
+            
+                return '
+                    <div class="action-group d-flex justify-content-center align-items-center gap-2">
+                        '.$action.'
                     </div>
                 ';
             })

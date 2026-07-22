@@ -8,11 +8,16 @@
                 <h5 class="mb-0">{{ $title }}</h5>
                 <p class="text-sm text-secondary mb-0">Manage role and menu permissions</p>
             </div>
+            @php
+                use App\Helpers\MenuPermissionHelper;
+            @endphp
+            @if (MenuPermissionHelper::canCreate('security.roleIndex'))
+                <button type="button" class="btn btn-primary" id="btn-add">
+                    <i class="fas fa-plus me-2"></i>
+                    New Role
+                </button>
+            @endif
 
-            <button type="button" class="btn btn-primary" id="btn-add">
-                <i class="fas fa-plus me-2"></i>
-                New Role
-            </button>
         </div>
 
         <div class="card-body">
@@ -20,7 +25,7 @@
                 <thead>
                     <tr>
                         <th class="text-center" width="5px">Action</th>
-                        <th class="text-center text-xs font-weight-bolder">No</th>
+                        <th class="text-center text-xs font-weight-bolder" width="5px">No</th>
                         <th class="text-xs font-weight-bolder">Role Name</th>
                         <th class="text-xs font-weight-bolder">Total Permission</th>
                     </tr>

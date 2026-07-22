@@ -1,4 +1,8 @@
 @push('scripts')
+@php
+use App\Helpers\MenuPermissionHelper;
+@endphp
+
 <script>
     $(function() {        
         $.ajaxSetup({
@@ -13,6 +17,11 @@
             dropdownParent: $('#locModal'),
         });
 
+        const locPermission = {
+            canEdit: @json(MenuPermissionHelper::canEdit('masterdata.locIndex')),
+            canDelete: @json(MenuPermissionHelper::canDelete('masterdata.locIndex'))
+        };
+
         // 1) Render List Data
         const table = $('#loc_tbl').DataTable({
             ajax: '{{ route('masterdata.locList') }}',
@@ -23,8 +32,10 @@
                     searchable: false,
                     className: "text-center align-middle",
                     render: function (data, type, row) {
-                        return `
-                            <div class="action-group d-flex justify-content-center align-items-center gap-2">
+                        let actions = '';
+                        
+                        if (locPermission.canEdit) {
+                            actions += `
                                 <button
                                     type="button"
                                     class="action-icon action-icon-edit btn-edit"
@@ -33,6 +44,11 @@
                                 >
                                     <i class="fas fa-pen"></i>
                                 </button>
+                            `;
+                        }
+                      
+                        if (locPermission.canDelete) {
+                            actions += `
                                 <button
                                     type="button"
                                     class="action-icon action-icon-delete btn-delete"
@@ -41,6 +57,20 @@
                                 >
                                     <i class="fas fa-trash"></i>
                                 </button>
+                            `;
+                        }
+                      
+                        if (!actions) {
+                            return `
+                                <span class="text-muted" title="No action permission">
+                                    <i class="fas fa-lock"></i>
+                                </span>
+                            `;
+                        }
+                      
+                        return `
+                            <div class="action-group d-flex justify-content-center align-items-center gap-2">
+                                ${actions}
                             </div>
                         `;
                     }

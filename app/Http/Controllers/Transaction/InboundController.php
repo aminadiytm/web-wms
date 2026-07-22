@@ -77,7 +77,11 @@ class InboundController extends Controller
             
                 if (in_array($status, ['ISSUED', 'PARTIAL'])) {
                     if (!$canEdit) {
-                        return '-';
+                        return '
+                            <span class="text-muted" title="No action permission">
+                                <i class="fas fa-lock"></i>
+                            </span>
+                        ';
                     }
             
                     return '
@@ -105,7 +109,11 @@ class InboundController extends Controller
                     ';
                 }
             
-                return '-';
+                return '
+                    <span class="text-muted" title="No action permission">
+                        <i class="fas fa-lock"></i>
+                    </span>
+                ';
                             
             })
             ->editColumn('status', function ($row) {

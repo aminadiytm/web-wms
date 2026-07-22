@@ -153,6 +153,11 @@
 
 
 @push('scripts')
+
+    @php
+    use App\Helpers\MenuPermissionHelper;
+    @endphp
+    
     <script>
         $(function() {
           $.ajaxSetup({
@@ -173,18 +178,26 @@
             });
           }
 
+          const categoryPermission = {
+              canEdit: @json(MenuPermissionHelper::canEdit('masterdata.catIndex')),
+              canDelete: @json(MenuPermissionHelper::canDelete('masterdata.catIndex'))
+          };
+
           // 1) Draw DataTables
           const table = $('#cat_tbl').DataTable({
             ajax : '{{ route('masterdata.catList') }}',
-            columns : [
+            columns: [
               {
                   data: null,
                   orderable: false,
                   searchable: false,
-                  className: "text-center align-middle",
+                  className: 'text-center align-middle',
+              
                   render: function (data, type, row) {
-                      return `
-                          <div class="action-group d-flex justify-content-center align-items-center gap-2">
+                      let actions = '';
+                  
+                      if (categoryPermission.canEdit) {
+                          actions += `
                               <button
                                   type="button"
                                   class="action-icon action-icon-edit btn-edit"
@@ -193,6 +206,11 @@
                               >
                                   <i class="fas fa-pen"></i>
                               </button>
+                          `;
+                      }
+                    
+                      if (categoryPermission.canDelete) {
+                          actions += `
                               <button
                                   type="button"
                                   class="action-icon action-icon-delete btn-delete"
@@ -201,10 +219,25 @@
                               >
                                   <i class="fas fa-trash"></i>
                               </button>
+                          `;
+                      }
+                    
+                      if (!actions) {
+                          return `
+                              <span class="text-muted" title="No action permission">
+                                  <i class="fas fa-lock"></i>
+                              </span>
+                          `;
+                      }
+                    
+                      return `
+                          <div class="action-group d-flex justify-content-center align-items-center gap-2">
+                              ${actions}
                           </div>
                       `;
                   }
               },
+            
               {data: 'DT_RowIndex', name: 'DT_RowIndex', class: "text-center", orderable: false, searchable: false},
               {data: 'cat_name', name: 'cat_name'},
               {data: 'cat_desc', name: 'cat_desc'},

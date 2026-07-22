@@ -99,7 +99,11 @@ class OutboundController extends Controller
                     ';
                 }
 
-                return '-';
+                return '
+                    <span class="text-muted" title="No action permission">
+                        <i class="fas fa-lock"></i>
+                    </span>
+                ';
             })
             ->editColumn('status', function ($row) {
                 $badgeClass = match(strtoupper($row->status ?? 'DRAFT')) {

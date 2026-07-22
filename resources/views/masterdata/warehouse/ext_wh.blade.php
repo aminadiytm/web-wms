@@ -1,4 +1,8 @@
 @push('scripts')
+@php
+use App\Helpers\MenuPermissionHelper;
+@endphp
+
 <script>
     $(function() {
         $.ajaxSetup({
@@ -7,6 +11,10 @@
             }
         });
 
+        const whPermission = {
+            canEdit: @json(MenuPermissionHelper::canEdit('masterdata.whIndex')),
+            canDelete: @json(MenuPermissionHelper::canDelete('masterdata.whIndex'))
+        };
         // 1) Render List Data
         const table = $('#wh_tbl').DataTable({
             ajax: '{{ route('masterdata.whList') }}',
@@ -17,8 +25,10 @@
                     searchable: false,
                     className: "text-center align-middle",
                     render: function (data, type, row) {
-                        return `
-                            <div class="action-group d-flex justify-content-center align-items-center gap-2">
+                        let actions = '';
+                        
+                        if (whPermission.canEdit) {
+                            actions += `
                                 <button
                                     type="button"
                                     class="action-icon action-icon-edit btn-edit"
@@ -27,6 +37,11 @@
                                 >
                                     <i class="fas fa-pen"></i>
                                 </button>
+                            `;
+                        }
+                      
+                        if (whPermission.canDelete) {
+                            actions += `
                                 <button
                                     type="button"
                                     class="action-icon action-icon-delete btn-delete"
@@ -35,6 +50,20 @@
                                 >
                                     <i class="fas fa-trash"></i>
                                 </button>
+                            `;
+                        }
+                      
+                        if (!actions) {
+                            return `
+                                <span class="text-muted" title="No action permission">
+                                    <i class="fas fa-lock"></i>
+                                </span>
+                            `;
+                        }
+                      
+                        return `
+                            <div class="action-group d-flex justify-content-center align-items-center gap-2">
+                                ${actions}
                             </div>
                         `;
                     }
