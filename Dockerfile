@@ -87,6 +87,6 @@ RUN chmod +x /usr/local/bin/start-render \
     && chown -R www-data:www-data storage bootstrap/cache \
     && chmod -R 775 storage bootstrap/cache
 
-EXPOSE 10000
+EXPOSE 80
 
 CMD ["/usr/local/bin/start-render"]
