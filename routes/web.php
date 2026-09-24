@@ -112,3 +112,5 @@ Route::get('/health', function () {
         'status' => 'ok',
     ]);
 });
+Route::post('/chatbot/message', [\App\Http\Controllers\ChatbotController::class, 'message'])
+    ->middleware(['auth', 'throttle:30,1'])->name('chatbot.message');
